@@ -1,0 +1,51 @@
+---
+title: "Titanic Exercise from Tutorial"
+author: "Sean Yu"
+date: "August 10, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+First, the tutorial told us the **Titanic** data is already avaliable in our workspace. Let's check the structure of the data.
+
+```{r}
+str(Titanic)
+```
+
+
+However, we can see from the result the "Titanic" data is somewhat different from the dataset that we encountered in the Data Camp tutorial. So I chose to extract the dataset from the tutorial and named it "**titanic714**" since there's 714 obsevations.  
+
+
+```{r}
+load(file="titanic714.RData")
+str(titanic714)
+```
+
+Now we have the correct data set so we move on to the next steps. We first have a look at the distribution of sexes within the classes of the ship. Here we could use gplot() with the data layer set to titanic714. We map factor(Pclass) onto the *x axis*, factor(Sex) onto *fill* and draw a *bar plot* using geom_bar() and set the position argument to "dodge".
+
+```{r}
+ggplot(titanic714, aes(x = factor(Pclass), fill = factor(Sex))) + geom_bar(position = "dodge")
+```
+
+These bar plots show us the distribution of male and female passengers amoung different class. Yet we want to further explore the survival rates of these men and women from each cabin classes during the incident. We copy the previous bar plot function and add a facet_grid() layer: ". ~ Survived".
+
+```{r}
+ggplot(titanic714, aes(x = factor(Pclass), fill = factor(Sex))) + geom_bar(position = "dodge") + facet_grid(". ~ Survived")
+```
+
+As the new plots shown, most male did not make it especiallt those who located in the 3rd cabin class. Female passengers, on the other hand, were much more fortunate amoung 1st and 2nd class. 
+
+Now the last variable we would like to add to the plot is the "Age" factor. And with a little help from the jittering function, we could have a more transparent view of the survival rate of passengers from different age groups.
+
+First we define a vector "posn.j" as our jittering function. Then we change the "geom_bar" from previous command to "geom_jitter" and set the position argument to  "posn.j", the alpha equal to 0.5, and size equal to 3.
+
+```{r}
+posn.j <- position_jitter(0.5, 0)
+ggplot(titanic714, aes(x = factor(Pclass),y = Age, col = factor(Sex))) + geom_jitter(position = posn.j, size = 3, alpha = 0.5) + facet_grid(". ~ Survived")
+```
+
+Now we can have a brief view of how age affected the chances of survival. It seems like most female passengers from 1st and 2nd classes made it through the tragedy. However, women in 3rd class were not that lucky. 
